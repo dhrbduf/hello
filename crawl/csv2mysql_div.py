@@ -54,12 +54,20 @@ def save(lst):
 csvFile = codecs.open("../crawl/data/meltop100.csv", "r", "utf-8")
 reader = csv.reader(csvFile, delimiter=',', quotechar='"')
 
+total = len(list(reader))
+print(total)
+
+csvFile2 = codecs.open("../crawl/data/meltop100.csv", "r", "utf-8")
+reader2= csv.reader(csvFile2, delimiter=',', quotechar='"')
+
 lst = []
 save_unit = 15
-for i, row in enumerate(reader):
-    if i != 0 and row[0] != '계':
+for i, row in enumerate(reader2):
+    # if i != 0 and row[0] != '계':
+    # print(i,total, row)
+    if i != 0 and i != (total - 1):
         lst.append([row[0] , row[1], row[2], row[3]])
 
-    if len(lst) == save_unit or row[0] == '계' :
+    if len(lst) == save_unit or i == (total - 1):
         save(lst)
         lst.clear()
