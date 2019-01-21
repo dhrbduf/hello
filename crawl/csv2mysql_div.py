@@ -55,12 +55,11 @@ csvFile = codecs.open("../crawl/data/meltop100.csv", "r", "utf-8")
 reader = csv.reader(csvFile, delimiter=',', quotechar='"')
 
 lst = []
-for row in reader:
-    lst.append([row[0] , row[1], row[2], row[3]])
+save_unit = 15
+for i, row in enumerate(reader):
+    if i != 0 and row[0] != '계':
+        lst.append([row[0] , row[1], row[2], row[3]])
 
-print("00>>", lst[0])
-print("11>>", lst[1])
-del lst[0]
-del lst[ len(lst) - 1 ]
-
-save(lst)
+    if len(lst) == save_unit or row[0] == '계' :
+        save(lst)
+        lst.clear()
