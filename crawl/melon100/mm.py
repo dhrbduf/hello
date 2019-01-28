@@ -18,23 +18,20 @@ HEADERS = {
 
 SqlAlbum = '''
     insert into Album(albumid, title, createdt, 
-                             company, genre, likecnt, rate,
-                             crawldt)
+                                company, genre, likecnt, rate, crawldt)
                 values( %(albumid)s, %(title)s, %(createdt)s, 
-                        %(company)s, %(genre)s, %(likecnt)s, %(rate)s,
-                        date_format(now(), '%%Y-%%m-%%d') )
-        on duplicate key update likecnt = %(likecnt)s, rate = %(rate)s,
-                        crawldt = date_format(now(), '%%Y-%%m-%%d')
+                        %(company)s, %(genre)s, %(likecnt)s, %(rate)s, date_format(now(), '%%Y-%%m-%%d') )
+        on duplicate key update likecnt = %(likecnt)s, rate = %(rate)s
     '''
 SqlSong = '''
     insert into Song(songno, title, genre, 
                                 albumid, likecnt)
                 values( %(songno)s, %(title)s, %(genre)s, 
                         %(albumid)s, %(likecnt)s )
-        on duplicate key update likecnt = %(likecnt)s
+        on duplicate key update likecnt = %(likecnt);
     '''
 SqlSongRank = '''
-    insert into SongRank(rankdt, rank, songno) 
+    insert ignore into SongRank(rankdt, rank, songno) 
                 values( date_format(now(), '%%Y-%%m-%%d'), %(rank)s, %(songno)s ) 
 '''
 SqlArtist = '''
@@ -46,7 +43,7 @@ SqlSongArtist = '''
                 values( %(songno)s, %(artistid)s, %(atype)s ) 
 '''
 
-SqlOldSongs = 'select songno from Song'
+SqlAllSongs = 'select songno from Song'
 
 NoPattern = re.compile("\'(.*)\'")
 NoPattern2 = re.compile("\((.*)\)")
@@ -65,8 +62,8 @@ def get_conn():
         user='dooo',
         password='dooo!',
         port=3306,
-        db='dadb',
-        # cursorclass=pymysql.cursors.DictCursor,
+        db='dooodb',
+        cursorclass=pymysql.cursors.DictCursor,
         charset='utf8')
 
 def getHtml(url, params={}, headers=HEADERS):
@@ -83,16 +80,17 @@ class Melon:
     albums = []
     artists = []
     artistsDic = {}
-    oldsongs = []
 
-    def __init__(self):
+    def getSongnoes(self):
         conn = get_conn()
-
         with conn:
             cur = conn.cursor()
-            cur.execute(SqlOldSongs)
-            rows = cur.fetchall()
-            self.oldsongs = [ r[0] for r in rows ]
+            cur.execute(SqlAllSongs)
+            return cur.fetchall()
+
+    def __init__(self):
+        oldsongs = self.getSongnoes()
+        self.oldsongs = [os['songno'] for os in oldsongs]
 
         soup = getSoup(Top100URL)
         trs = soup.select('div#tb_list table tbody tr[data-song-no]')
@@ -104,7 +102,7 @@ class Melon:
             albumid = tr.select_one('div.wrap a.image_typeAll').get('href')
             song_artists = []
             song_artists_types = []
-            for a in singers: # 0:singer, 1:작사가, 2:작곡가, 3:편곡
+            for a in singers: # 가수 셋팅!! 0:singer, 1:작사가, 2:작곡가, 3:편곡
                 if song_no in self.oldsongs: continue
 
                 artistid = getNo(a.get('href'))
@@ -120,6 +118,7 @@ class Melon:
                     'albumid': getNo(albumid),
                     'artists': song_artists,
                     'atypes': song_artists_types,
+                    'likecnt': 0
                 }
 
             # QQQ
@@ -168,7 +167,6 @@ class Melon:
     def setSongOthers(self):
         for songno, song in self.songs.items():
 
-            # 기존에 있던 노래는 상세 안감!
             if songno in self.oldsongs:
                 song['genre'] = ''
                 continue
@@ -183,6 +181,7 @@ class Melon:
             sinfo1 = conts.select_one('div.meta dl.list')
             genre = sinfo1.select_one('dd:nth-of-type(3)').text
             song['genre'] = genre
+            
 
             arts = conts.select('ul.list_person.clfix li div.entry')
             for art in arts:
@@ -213,17 +212,16 @@ class Melon:
         conn = get_conn()
         with conn:
             cur = conn.cursor()
-            for x in lst:
-                cur.execute(sql, x)
-            # cur.executemany(sql, lst)
+            cur.executemany(sql, lst)
             conn.commit()
 
 
     def saveAlbum(self):
+        print(SqlAlbum, self.albums)
         self.executeMany(SqlAlbum, self.albums)
 
     def saveSong(self):
-        self.executeMany(SqlSong, list(self.songs.values()))
+        self.executeMany(SqlSong, self.songs.values())
 
     def saveSongRank(self):
         self.executeMany(SqlSongRank, list(self.songs.values()))
