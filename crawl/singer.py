@@ -64,7 +64,8 @@ html2 = '''
 </dl>
 '''
 
-col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company', '수상이력': 'award'}
+# col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company', '수상이력': 'award'}
+col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company'}
 
 soup = BeautifulSoup(html2, 'html.parser')
 
