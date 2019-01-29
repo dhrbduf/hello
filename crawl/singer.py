@@ -76,11 +76,13 @@ for d in dl:
     if not d.name: continue
 
     if d.name == 'dt':
+        if not col_names.get(d.text): continue
+
         dts.append(col_names[d.text])
     else:
         span = d.select_one('span')
         if span != None:
-            print("ssssssssssssS>>", span.text)
+            print("ssssssssssssS>>", span.text.replace('\n', ''))
             dds.append(span.next.strip())
         else:
             dds.append(d.text)
