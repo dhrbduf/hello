@@ -21,7 +21,7 @@ url = "https://openapi.naver.com/v1/search/blog"
 # url = "https://openapi.naver.com/v1/search/image"
 html = requests.get(url, params=params, headers=headers).text
 jsonData = json.loads(html)
-# print(json.dumps(jsonData, ensure_ascii=False, indent=2))
+print(json.dumps(jsonData, ensure_ascii=False, indent=2))
 
 for i in jsonData['items']:
     print(i['title'], i['link'], i['bloggername'], i['postdate'])

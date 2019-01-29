@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
 html = '''
-    <dl class="info_02 clfix">
+    <dl>
         <dt>국적</dt>
         <dd>대한민국</dd>
 
@@ -25,8 +25,13 @@ html = '''
             </span>
         </dd>
         
-        <dt>생일</dt>
-        <dd>1996.02.09</dd>
+        <dt>수상이력</dt>
+        <dd class="awarded">
+            <span class="ellipsis">
+                2018 하이원 서울가요대상
+                <span class="bar">|</span>본상
+            </span>
+        </dd>
     </dl>
 '''
 
