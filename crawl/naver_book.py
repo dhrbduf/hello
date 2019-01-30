@@ -9,7 +9,12 @@ def main():
     mongo_client = MongoClient('localhost', 27017)
     db = mongo_client.dooodb
     # save2Mongo(db, jsonData['items'])
-    printBooks(db)
+    changePriceType(db)
+    # printBooks(db)
+
+
+def changePriceType(db):
+    
 
 def printBooks(db):
     results = db.Books.find({}).sort("price", DESCENDING).limit(10)

@@ -4,7 +4,7 @@ from apiclient.discovery import build
 from pymongo import MongoClient, DESCENDING
 from pprint import pprint
 
-API_KEY = "AIzaSyDONq1sefS8lQ7WSqfPA0jdY0ypyY7hhaI"
+API_KEY = "AIzaSyAYQ9CBn8msCRbxuwHPOhm-Za0iJl4LorU"
 
 def main():
     mongo_client = MongoClient('localhost', 27017)
@@ -16,6 +16,7 @@ def main():
         save(collection, items)
 
     top10(collection)
+
 
 def search_youtube(q):
     youtube = build('youtube', 'v3', developerKey=API_KEY)
@@ -32,7 +33,7 @@ def search_youtube(q):
         res = req.execute()
         ids = []
         for item in res['items']:
-            ids.append( item['id']['videoId'] )
+            ids.append(item['id']['videoId'])
 
         snippetRes = youtube.videos().list(
             part='snippet,statistics',
@@ -44,6 +45,7 @@ def search_youtube(q):
         req = youtube.search().list_next(req, res)
         i += 1
 
+
 def save(collection, items):
     for item in items:
         pprint(item)
@@ -53,11 +55,13 @@ def save(collection, items):
     result = collection.insert_many(items)
     print('Affected docs is {}'.format(len(result.inserted_ids)))
 
+
 def top10(collection):
     for item in collection.find().sort('statistics.viewCount', DESCENDING).limit(5):
         sts = item['statistics']
         snippet = item['snippet']
         print(">>", sts['viewCount'], snippet['title'])
+
 
 if __name__ == '__main__':
     main()
