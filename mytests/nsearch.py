@@ -6,14 +6,11 @@ headers = {
     "X-Naver-Client-Secret": "uB4v_zPuG0"
 }
 
-# title = "Python"
-title = "파이썬"
-
 params = {
-    "display": 20,
+    "display": 100,
     "start": 1,
     "sort": "date",
-    "query": title
+    "query": "파이썬"
 }
 
 # url = "https://openapi.naver.com/v1/search/book.json"
@@ -21,7 +18,8 @@ url = "https://openapi.naver.com/v1/search/blog"
 # url = "https://openapi.naver.com/v1/search/image"
 html = requests.get(url, params=params, headers=headers).text
 jsonData = json.loads(html)
-print(json.dumps(jsonData, ensure_ascii=False, indent=2))
+# print(json.dumps(jsonData, ensure_ascii=False, indent=2))
+print(len(jsonData['items']))
 
 for i in jsonData['items']:
     print(i['title'], i['link'], i['bloggername'], i['postdate'])

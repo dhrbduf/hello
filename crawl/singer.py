@@ -1,16 +1,11 @@
 from bs4 import BeautifulSoup
+import re
 
 html = '''
     <dl>
         <dt>국적</dt>
         <dd>대한민국</dd>
 
-        <dt>활동유형</dt>
-        <dd>여성, 솔로</dd>
-
-        <dt>활동년대</dt>
-        <dd>2010</dd>
-        
         <dt>활동장르</dt>
         <dd>Dance, Ballad, Drama</dd>
     
@@ -69,10 +64,10 @@ html2 = '''
 </dl>
 '''
 
-# col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company', '수상이력': 'award'}
-col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company'}
+col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company', '수상이력': 'award'}
+# col_names = {'국적': 'nation', '활동유형': 'act_type', '활동년대': 'act_year', '활동장르': 'act_genre', '데뷔': 'debut', '생일': 'birth', '소속사': 'company'}
 
-soup = BeautifulSoup(html2, 'html.parser')
+soup = BeautifulSoup(html, 'html.parser')
 
 dl = soup.find('dl')
 dts = []
@@ -88,7 +83,15 @@ for d in dl:
         span = d.select_one('span')
         if span != None:
             print("ssssssssssssS>>", span.text.replace('\n', ''))
-            dds.append(span.next.strip())
+            # dds.append(span.next.strip())
+            
+            s = span.text.replace('\n', '')
+            if 'TTT' in s:
+                s = s.replace('T', '')
+
+            if '|' in s:
+                s = re.sub('\s*\|', ' | ', s)
+            dds.append(s.strip())
         else:
             dds.append(d.text)
 
@@ -97,3 +100,10 @@ for i in range(len(dts)):
     vals[dts[i]] =  dds[i]
 
 print(vals)
+vals = {}
+
+for i in range(len(dts)):
+    vals[dts[i]] = dds[i]
+
+print("insert into Singer({}, {}, {}, {}) values({}, {}, {}, {});".format(
+    dts[0], dts[1], dts[2], dts[3], dds[0], dds[1], dds[2], dds[3]))
