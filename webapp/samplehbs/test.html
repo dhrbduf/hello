@@ -20,18 +20,45 @@
 
 <div id="result"></div>
 
+<hr>
+<h1>Comments</h1>
+<div id="result_comments"></div>
+
+<script id="comments-template" type="text/x-handlebars-template">
+  <div class="comments">
+    <ul>
+        {{#each comments}}
+            <li>{{id}}. {{title}} - {{{body}}}</li>
+        {{/each}}
+    </ul>
+  </div>
+</script>
+
+
 <script>
     var context = {
         title: 'Title',
         body: 'body!!'
     };
+    
+    hbs("entry-template", context, 'result');
 
-    var source = document.getElementById("entry-template").innerHTML;
-    console.log("source>>", source)
-    var template = Handlebars.compile(source);
-    var html = template(context);
-    console.log("html>>", html)
-    document.getElementById('result').innerHTML = html;
+    var data = {
+        comments: [
+            {id: 1, title: '제목1', body: '내용1'},
+            {id: 2, title: '제목2', body: '내용2'},
+            {id: 3, title: '제목3', body: '내용<strong>3</strong>'}
+        ]
+    }
+    hbs('comments-template', data, 'result_comments');
+
+
+    function hbs(sourceId, data, resultId) {
+        var source = document.getElementById(sourceId).innerHTML;
+        var template = Handlebars.compile(source);
+        var html = template(data);
+        document.getElementById(resultId).innerHTML = html;
+    }
 </script>
 
 </body>
