@@ -57,7 +57,7 @@ def save(collection, items):
 
 
 def top10(collection):
-    for item in collection.find().sort('statistics.viewCount', DESCENDING).limit(5):
+    for item in collection.find().sort('statistics.viewCount', DESCENDING).limit(10):
         sts = item['statistics']
         snippet = item['snippet']
         print(">>", sts['viewCount'], snippet['title'])
